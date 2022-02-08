@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Goal } from '../goal';
 import { GoalService } from '../goal-service/goal.service';
 import { AlertService } from '../alert-service/alert.service';
+import { Quote } from '../quote-class/quote'
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -14,6 +16,7 @@ export class GoalComponent implements OnInit {
 
   goals:Goal[]; 
   alertService:AlertService;
+  quote!: Quote;
 
   addNewGoal(goal:any) {
 
@@ -41,12 +44,19 @@ export class GoalComponent implements OnInit {
   }
 }
   
-  constructor(goalService:GoalService, alertService:AlertService) {
+  constructor(goalService:GoalService, alertService:AlertService, private http:HttpClient) {
     this.goals = goalService.getGoals()
     this.alertService = alertService;
    }
  
   ngOnInit(): void {
+    interface ApiResponse {
+      author:string;
+      quote:string;
+
+    }
+    this.http.get<ApiResponse>("http:quotes.stormconsultancy.co.uk/random.json").subscribe(data=>{//Succesful API request
+    this.quote = new Quote(data.author, data.quote)})
   }
 
 }
